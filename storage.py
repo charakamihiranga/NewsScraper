@@ -21,3 +21,8 @@ def save_news_to_firebase(news_items):
             'postContent': item['postContent'],
         })
     print("News items saved to Firebase.")
+
+def delete_news_collection():
+    news_ref = db.reference('news')
+    news_ref.delete()
+    print("News collection deleted.")

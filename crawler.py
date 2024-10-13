@@ -30,13 +30,13 @@ def scrape_esana_news():
         title_tag = article.find('h3').find('a')
         title = title_tag.text.strip() if title_tag else "No title"
         relative_link = title_tag['href'] if title_tag else "No link"
-        link = f'{BASE_URL}{relative_link}'  # Construct the full link
+        link = f'{BASE_URL}{relative_link}'
 
         date_tag = article.find('ul', class_='list-inline').find('a')
         time = date_tag.text.strip() if date_tag else "No date"
 
         # Scrape news details for post content
-        news_details = scrapeNewsDetails(link)
+        news_details = scrapeEsanaNewsDetails(link)
 
         # Create a dictionary for the news item
         news_items.append({
@@ -54,7 +54,7 @@ def scrape_esana_news():
     # Send data to Firebase
     save_news_to_firebase(news_items)
 
-def scrapeNewsDetails(url):
+def scrapeEsanaNewsDetails(url):
     print(f"Scraping news details from: {url}")
     response = requests.get(url)
     response.raise_for_status()
@@ -72,7 +72,7 @@ def scrapeNewsDetails(url):
         paragraphs = content_div.find_all('p')
         full_content = ' '.join(p.get_text(separator=' ') for p in paragraphs)
 
-        # Split the content into two halves and take the first half
+        # Split the content into two halves and take the first half(to prevent duplication)
         post_content = full_content[len(full_content) // 2:]
     else:
         post_content = 'Content not available'
@@ -82,4 +82,3 @@ def scrapeNewsDetails(url):
         'image_link': image_link,
         'post_content': post_content
     }
-
